@@ -2,8 +2,7 @@
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:movie_list/model/movie_detail_model.dart';
 import 'package:movie_list/store/movie_store.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
