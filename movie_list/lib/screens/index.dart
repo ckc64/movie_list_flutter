@@ -17,9 +17,13 @@ class MovieListScreen extends StatefulWidget {
 
 class _MovieListScreenState extends State<MovieListScreen> {
   MovieStore movieStore = MovieStore();
+  int? selectedIndex = 0;
+
   @override
   void initState() {
     movieStore.fetchPopular();
+    movieStore.fetchTopRated();
+    movieStore.fetchUpcomingMovies();
     super.initState();
   }
 
@@ -28,8 +32,47 @@ class _MovieListScreenState extends State<MovieListScreen> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
-    final items = movieStore.allPopular;
+    List<String> movieType = ["Popular", "Top Rated", "Upcoming"];
+
+    bool isSelected = false;
+    Widget _buildChips() {
+      List<Widget> chips = [];
+
+      for (int i = 0; i < movieType.length; i++) {
+        ChoiceChip choiceChip = ChoiceChip(
+          selected: selectedIndex == i,
+          backgroundColor: Colors.amber,
+          label: Text(movieType[i]),
+          labelStyle: selectedIndex == i
+              ? TextStyle(color: Colors.white)
+              : TextStyle(color: Colors.black),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+          selectedColor: Color.fromARGB(255, 172, 129, 1),
+          onSelected: (bool selected) {
+            setState(() {
+              selectedIndex = i;
+              movieStore.movieTypeFilter = movieType[i].toLowerCase();
+            });
+          },
+        );
+
+        chips.add(
+          choiceChip,
+        );
+      }
+
+      return ListView(
+        // This next line does the trick.
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        physics: NeverScrollableScrollPhysics(),
+        children: chips,
+      );
+    }
+
+    final items = movieStore.getMovieList(movieStore.movieTypeFilter);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -49,54 +92,52 @@ class _MovieListScreenState extends State<MovieListScreen> {
           final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
           final double itemWidth = size.width / 1.5;
           return Stack(
+            alignment: AlignmentDirectional.topCenter,
             children: [
-              Column(
-                children: [
-                  Expanded(
-                    child: GridView.count(
+              GridView.count(
+                padding: EdgeInsets.zero,
+                crossAxisCount: 3,
+                mainAxisSpacing: 0,
+                childAspectRatio: (itemWidth / itemHeight),
+                children: List.generate(items.length, (index) {
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MovieDetailsScreen(movieID: items[index].id!),
+                          ));
+                    },
+                    child: Container(
                       padding: EdgeInsets.zero,
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 0,
-                      childAspectRatio: (itemWidth / itemHeight),
-                      children: List.generate(items.length, (index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MovieDetailsScreen(
-                                      movieID: items[index].id!),
-                                ));
-                          },
-                          child: Container(
-                            padding: EdgeInsets.zero,
-                            child: CachedNetworkImage(
-                                imageUrl: movieStore
-                                    .getImage(items[index].posterPath!),
-                                fit: BoxFit.fill),
-                          ),
-                        );
-                      }),
+                      child: CachedNetworkImage(
+                          imageUrl:
+                              movieStore.getImage(items[index].posterPath!),
+                          fit: BoxFit.fill),
                     ),
-                  ),
-                ],
+                  );
+                }),
               ),
-              // Container(
-              //   height: 200,
-              //   width: MediaQuery.of(context).size.width,
-              //   foregroundDecoration: const BoxDecoration(
-              //     gradient: LinearGradient(
-              //       colors: [
-              //         Colors.black,
-              //         Colors.black45,
-              //         Colors.transparent,
-              //       ],
-              //       begin: Alignment.topCenter,
-              //       end: Alignment.bottomCenter,
-              //       stops: [0, 0.5, 0.3],
-              //     ),
-              //   ),
-              // )
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 25.0, // soften the shadow
+                        spreadRadius: 2.0, //extend the shadow
+                      )
+                    ],
+                  ),
+                  margin: EdgeInsets.only(top: 25),
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Expanded(child: _buildChips()),
+                    ],
+                  )),
             ],
           );
         },

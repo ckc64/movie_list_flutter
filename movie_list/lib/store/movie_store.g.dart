@@ -25,6 +25,54 @@ mixin _$MovieStore on _MovieStoreBase, Store {
     });
   }
 
+  late final _$allTopRatedAtom =
+      Atom(name: '_MovieStoreBase.allTopRated', context: context);
+
+  @override
+  ObservableList<Result> get allTopRated {
+    _$allTopRatedAtom.reportRead();
+    return super.allTopRated;
+  }
+
+  @override
+  set allTopRated(ObservableList<Result> value) {
+    _$allTopRatedAtom.reportWrite(value, super.allTopRated, () {
+      super.allTopRated = value;
+    });
+  }
+
+  late final _$allUpcomingAtom =
+      Atom(name: '_MovieStoreBase.allUpcoming', context: context);
+
+  @override
+  ObservableList<Result> get allUpcoming {
+    _$allUpcomingAtom.reportRead();
+    return super.allUpcoming;
+  }
+
+  @override
+  set allUpcoming(ObservableList<Result> value) {
+    _$allUpcomingAtom.reportWrite(value, super.allUpcoming, () {
+      super.allUpcoming = value;
+    });
+  }
+
+  late final _$allLatestAtom =
+      Atom(name: '_MovieStoreBase.allLatest', context: context);
+
+  @override
+  ObservableList<Result> get allLatest {
+    _$allLatestAtom.reportRead();
+    return super.allLatest;
+  }
+
+  @override
+  set allLatest(ObservableList<Result> value) {
+    _$allLatestAtom.reportWrite(value, super.allLatest, () {
+      super.allLatest = value;
+    });
+  }
+
   late final _$allSimilarAtom =
       Atom(name: '_MovieStoreBase.allSimilar', context: context);
 
@@ -89,12 +137,28 @@ mixin _$MovieStore on _MovieStoreBase, Store {
     });
   }
 
-  late final _$addMoviesAsyncAction =
-      AsyncAction('_MovieStoreBase.addMovies', context: context);
+  late final _$movieTypeFilterAtom =
+      Atom(name: '_MovieStoreBase.movieTypeFilter', context: context);
 
   @override
-  Future addMovies(MovieModel m) {
-    return _$addMoviesAsyncAction.run(() => super.addMovies(m));
+  String get movieTypeFilter {
+    _$movieTypeFilterAtom.reportRead();
+    return super.movieTypeFilter;
+  }
+
+  @override
+  set movieTypeFilter(String value) {
+    _$movieTypeFilterAtom.reportWrite(value, super.movieTypeFilter, () {
+      super.movieTypeFilter = value;
+    });
+  }
+
+  late final _$addPopularMoviesAsyncAction =
+      AsyncAction('_MovieStoreBase.addPopularMovies', context: context);
+
+  @override
+  Future addPopularMovies(MovieModel m) {
+    return _$addPopularMoviesAsyncAction.run(() => super.addPopularMovies(m));
   }
 
   late final _$fetchPopularAsyncAction =
@@ -103,6 +167,39 @@ mixin _$MovieStore on _MovieStoreBase, Store {
   @override
   Future fetchPopular() {
     return _$fetchPopularAsyncAction.run(() => super.fetchPopular());
+  }
+
+  late final _$addTopRatedMoviesAsyncAction =
+      AsyncAction('_MovieStoreBase.addTopRatedMovies', context: context);
+
+  @override
+  Future addTopRatedMovies(MovieModel m) {
+    return _$addTopRatedMoviesAsyncAction.run(() => super.addTopRatedMovies(m));
+  }
+
+  late final _$fetchTopRatedAsyncAction =
+      AsyncAction('_MovieStoreBase.fetchTopRated', context: context);
+
+  @override
+  Future fetchTopRated() {
+    return _$fetchTopRatedAsyncAction.run(() => super.fetchTopRated());
+  }
+
+  late final _$addUpcomingMoviesAsyncAction =
+      AsyncAction('_MovieStoreBase.addUpcomingMovies', context: context);
+
+  @override
+  Future addUpcomingMovies(MovieModel m) {
+    return _$addUpcomingMoviesAsyncAction.run(() => super.addUpcomingMovies(m));
+  }
+
+  late final _$fetchUpcomingMoviesAsyncAction =
+      AsyncAction('_MovieStoreBase.fetchUpcomingMovies', context: context);
+
+  @override
+  Future fetchUpcomingMovies() {
+    return _$fetchUpcomingMoviesAsyncAction
+        .run(() => super.fetchUpcomingMovies());
   }
 
   late final _$fetchDetailMovieAsyncAction =
@@ -170,6 +267,17 @@ mixin _$MovieStore on _MovieStoreBase, Store {
   }
 
   @override
+  ObservableList<Result> getMovieList(String movieType) {
+    final _$actionInfo = _$_MovieStoreBaseActionController.startAction(
+        name: '_MovieStoreBase.getMovieList');
+    try {
+      return super.getMovieList(movieType);
+    } finally {
+      _$_MovieStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic addDetailsMovies(MovieDetailModel m) {
     final _$actionInfo = _$_MovieStoreBaseActionController.startAction(
         name: '_MovieStoreBase.addDetailsMovies');
@@ -195,10 +303,14 @@ mixin _$MovieStore on _MovieStoreBase, Store {
   String toString() {
     return '''
 allPopular: ${allPopular},
+allTopRated: ${allTopRated},
+allUpcoming: ${allUpcoming},
+allLatest: ${allLatest},
 allSimilar: ${allSimilar},
 allCast: ${allCast},
 movieDetails: ${movieDetails},
-videoKeys: ${videoKeys}
+videoKeys: ${videoKeys},
+movieTypeFilter: ${movieTypeFilter}
     ''';
   }
 }

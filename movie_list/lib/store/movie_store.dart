@@ -10,7 +10,6 @@ part 'movie_store.g.dart';
 const String POPULAR = 'popular';
 const String TOP_RATED = 'top_rated';
 const String UPCOMING = 'upcoming';
-const String LATEST = 'latest';
 
 class MovieStore = _MovieStoreBase with _$MovieStore;
 MovieServices movieServices = MovieServices();
@@ -31,6 +30,14 @@ abstract class _MovieStoreBase with Store {
   ObservableList<Result> allPopular = ObservableList<Result>();
 
   @observable
+  ObservableList<Result> allTopRated = ObservableList<Result>();
+
+  @observable
+  ObservableList<Result> allUpcoming = ObservableList<Result>();
+  @observable
+  ObservableList<Result> allLatest = ObservableList<Result>();
+
+  @observable
   ObservableList<Result> allSimilar = ObservableList<Result>();
 
   @observable
@@ -43,6 +50,9 @@ abstract class _MovieStoreBase with Store {
   @observable
   ObservableList<String> videoKeys = ObservableList<String>();
 
+  @observable
+  String movieTypeFilter = POPULAR;
+
   @action
   String getImage(String img) {
     String url = "https://image.tmdb.org/t/p/w500/";
@@ -51,7 +61,28 @@ abstract class _MovieStoreBase with Store {
   }
 
   @action
-  addMovies(MovieModel m) async {
+  ObservableList<Result> getMovieList(String movieType) {
+    ObservableList<Result>? movies;
+
+    switch (movieType) {
+      case 'popular':
+        movies = allPopular;
+        break;
+      case 'top rated':
+        movies = allTopRated;
+        break;
+      case 'upcoming':
+        movies = allUpcoming;
+        break;
+      default:
+        movies = allPopular;
+        break;
+    }
+    return movies;
+  }
+
+  @action
+  addPopularMovies(MovieModel m) async {
     if (m.results!.isEmpty || m.results == null) {
       allPopular.clear();
     } else {
@@ -74,7 +105,65 @@ abstract class _MovieStoreBase with Store {
 
     m = await future;
 
-    addMovies(m);
+    addPopularMovies(m);
+
+    return;
+  }
+
+  @action
+  addTopRatedMovies(MovieModel m) async {
+    if (m.results!.isEmpty || m.results == null) {
+      allTopRated.clear();
+    } else {
+      for (var element in m.results!) {
+        allTopRated.add(element);
+      }
+      allTopRated.sort(
+        (a, b) {
+          return b.releaseDate!.compareTo(a.releaseDate!);
+        },
+      );
+    }
+  }
+
+  @action
+  fetchTopRated() async {
+    MovieModel m = MovieModel();
+
+    final future = movieServices.fetchMovie(TOP_RATED);
+
+    m = await future;
+
+    addTopRatedMovies(m);
+
+    return;
+  }
+
+  @action
+  addUpcomingMovies(MovieModel m) async {
+    if (m.results!.isEmpty || m.results == null) {
+      allUpcoming.clear();
+    } else {
+      for (var element in m.results!) {
+        allUpcoming.add(element);
+      }
+      allUpcoming.sort(
+        (a, b) {
+          return b.releaseDate!.compareTo(a.releaseDate!);
+        },
+      );
+    }
+  }
+
+  @action
+  fetchUpcomingMovies() async {
+    MovieModel m = MovieModel();
+
+    final future = movieServices.fetchMovie(UPCOMING);
+
+    m = await future;
+
+    addUpcomingMovies(m);
 
     return;
   }
