@@ -131,7 +131,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
                       )
                     ],
                   ),
-                  margin: EdgeInsets.only(top: 25),
+                  margin: EdgeInsets.only(top: 35),
                   alignment: Alignment.center,
                   child: Column(
                     children: [
